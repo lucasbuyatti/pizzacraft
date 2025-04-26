@@ -27,3 +27,5 @@
 #include "minecraft/lunarforge189_helper.h"
 #include "minecraft/Minecraft/Minecraft.h"
 #include "minecraft/Player/Player.h"
+#include "minecraft/World/World.h"
+#include "minecraft/Entity/Entity.h"

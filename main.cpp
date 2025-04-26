@@ -45,9 +45,15 @@ void debug_thread(HMODULE hModule) {
 
 	getLoadedClasses(env, map);
 
-
+	std::vector<jobject> playerEntities;
 
 	while (true) {
+
+		playerEntitiesManager(playerEntities, env, map);
+
+		for (int i = 0; i < playerEntities.size(); i++) {
+			printf("Player[%u] %p", i, playerEntities.at(i));
+		}
 
 		if (GetAsyncKeyState(VK_END) & 0x8000) break;
 
