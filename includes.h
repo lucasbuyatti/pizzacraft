@@ -5,27 +5,46 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include <unordered_map>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include  <algorithm>
+#include <random>
+#include <chrono>
+#include <mutex>
+#include <fstream>
+#include <windowsx.h>
+#include <dwmapi.h>
 
-// ImGui
-#include "imgui/include/imgui.h"
-#include "imgui/include/backends/imgui_impl_win32.h"
-#include "imgui/include/backends/imgui_impl_opengl3.h"
-
-// Hooks
-#include "minhook/includes/include/MinHook.h"
-#include "hooks/render_hook.h"
+#include "src/json/json.hpp"
+#include "src/json/json_fwd.hpp"
 
 // jvm / jni / jvmti / helper
-#include "jvm/include/jni.h"
-#include "jvm/include/jvmti.h"
-#include "jvm/jni_helper.h"
+#include "src/jvm/include/jni.h"
+#include "src/jvm/include/jvmti.h"
+#include "src/jvm/jni_helper.h" 
+
+// ImGui
+#include "src/imgui/include/imgui.h"
+#include "src/imgui/include/backends/imgui_impl_win32.h"
+#include "src/imgui/include/backends/imgui_impl_opengl3.h"
+
+// Hooks
+#include "src/minhook/includes/include/MinHook.h"
+#include "src/hooks/render_hook.h"
 
 // Minecraft
-#include "minecraft/Math/minecraft_math.h"
-#include "minecraft/lunarforge189_helper.h"
-#include "minecraft/Minecraft/Minecraft.h"
-#include "minecraft/Player/Player.h"
-#include "minecraft/World/World.h"
-#include "minecraft/Entity/Entity.h"
+#include "src/minecraft/Math/minecraft_math.h"
+#include "src/minecraft/lunarforge189_helper.h"
+#include "src/minecraft/Minecraft/Minecraft.h"
+#include "src/minecraft/Player/Player.h"
+#include "src/minecraft/World/World.h"
+#include "src/minecraft/Blocks/blocks.h"
+
+// Modules
+#include "src/modules/modules.h"
+
+// Render
+#include "src/render/render.h"
+
+
+
