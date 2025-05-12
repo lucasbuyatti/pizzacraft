@@ -12,7 +12,7 @@ namespace minecraft {
 
 	std::string typeOfHit(JNIEnv* env);
 
-	void leftClickCounter(JNIEnv* env);
+	void leftClickCounter(JNIEnv* env, int value);
 
 	jobject pointedEntity(JNIEnv* env);
 

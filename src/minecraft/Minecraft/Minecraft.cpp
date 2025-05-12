@@ -158,11 +158,11 @@ std::string minecraft::typeOfHit(JNIEnv* env) {
 	return result;
 }
 
-void minecraft::leftClickCounter(JNIEnv* env) {
+void minecraft::leftClickCounter(JNIEnv* env, int value) {
 	static jfieldID leftClickCounterFieldId = jni_cache::fieldCache["leftClickCounter"];
 	jobject theMinecraft = jni_cache::jobjectCache["theMinecraft"];
 
-	env->SetIntField(theMinecraft, leftClickCounterFieldId, 0);
+	env->SetIntField(theMinecraft, leftClickCounterFieldId, static_cast<jint>(value));
 	CheckJNIException(env);
 }
 

@@ -26,7 +26,7 @@ void modules::noclickdelay::ncd() {
 
 	while (true) {
 
-		if (modules::config::cfg.fplace_cfg.enable.load()) {
+		if (modules::config::cfg.ncd_cfg.enable.load()) {
 
 
 			if (!env) {
@@ -49,7 +49,8 @@ void modules::noclickdelay::ncd() {
 				continue;
 			}
 
-			
+
+			minecraft::leftClickCounter(env, 0);
 
 		}
 

@@ -5,26 +5,21 @@ extern JavaVM* jvm;
 void hooks_thread(HMODULE hModule) {
 
 	// Render hook
-	/*{
-		if (!Hook_init())
-		{
-			while (!(GetAsyncKeyState(VK_END) & 0x8000)) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(25));
-			}
+	//{
+	//	if (!Hook_init())
+	//	{
+	//		while (!(GetAsyncKeyState(VK_END) & 0x8000)) {
+	//			std::this_thread::sleep_for(std::chrono::milliseconds(25));
+	//		}
 
-			Hook_shutdown();
-			FreeLibraryAndExitThread(hModule, 0);
-		}
-	}*/
+	//		Hook_shutdown();
+	//		FreeLibraryAndExitThread(hModule, 0);
+	//	}
+	//}
 
 	// WSASend hook
-
-
-
 	{
 		if (winsock_hook::Hook_init() == MH_OK) {
-
-			dlog("Hook");
 
 			while (!(GetAsyncKeyState(VK_END) & 0x8000)) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(25));
@@ -32,10 +27,6 @@ void hooks_thread(HMODULE hModule) {
 
 			winsock_hook::Hook_shutdown();
 
-
-		}
-		else {
-			delog("Hook");
 
 		}
 	}
@@ -144,8 +135,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		std::thread thread_hooks(hooks_thread, hModule);
 		thread_hooks.detach();
 
-		//std::thread thread_modules(modules_thread, hModule);
-		//thread_modules.detach();
+		std::thread thread_modules(modules_thread, hModule);
+		thread_modules.detach();
 
 		break;
 	}
