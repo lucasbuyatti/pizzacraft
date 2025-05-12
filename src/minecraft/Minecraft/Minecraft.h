@@ -10,8 +10,26 @@ namespace minecraft {
 
 	void rightClickDelayTimer(JNIEnv* env, int delay);
 
+	std::string typeOfHit(JNIEnv* env);
+
+	void leftClickCounter(JNIEnv* env);
+
+	jobject pointedEntity(JNIEnv* env);
+
 	namespace game_settings {
 		bool keyBindAttack_isKeyDown(JNIEnv* env);
+
+		bool keyBindAttack_isPressed(JNIEnv* env);
+
+		bool keyBindForward_isKeyDown(JNIEnv* env);
+	}
+
+	namespace packets {
+	
+		void sendPacket(JNIEnv* env, jobject packet);
+
+
+
 	}
 }
 

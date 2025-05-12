@@ -31,76 +31,107 @@ void clearPlayerEntities(JNIEnv* env, std::vector<jobject>& playerEntities) {
 }
 
 void world::entity::player::playerEntitiesManager(JNIEnv* env, std::vector<jobject>& playerEntities) {
+    static jfieldID theWorldField = jni_cache::fieldCache["theWorld"];
+    static jfieldID playerEntitiesField = jni_cache::fieldCache["playerEntities"];
+    static jclass listClass = jni_cache::jclassCache["java/util/List"];
+    static jobject theMinecraft = jni_cache::jobjectCache["theMinecraft"];
+    static jmethodID getMethod = env->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
 
-	for (jobject o : playerEntities) env->DeleteLocalRef(o);
-	playerEntities.clear();
+    for (jobject o : playerEntities) env->DeleteLocalRef(o);
+    playerEntities.clear();
 
-	int currSize = sizePlayerEntities(env);
-	if (currSize <= 0)
-		return;
+    int currSize = sizePlayerEntities(env);
+    if (currSize <= 0)
+        return;
 
-	if (playerEntities.size() != static_cast<size_t>(currSize)) {
-		clearPlayerEntities(env, playerEntities);
-	}
+    if (playerEntities.size() != static_cast<size_t>(currSize)) {
+        clearPlayerEntities(env, playerEntities);
+    }
 
-	jobject worldInstance = env->GetObjectField(jni_cache::jobjectCache["theMinecraft"], jni_cache::fieldCache["theWorld"]);
-	if (CheckJNIException(env) || !worldInstance) return;
+    jobject worldInstance = env->GetObjectField(theMinecraft, theWorldField);
+    if (CheckJNIException(env) || !worldInstance) return;
 
-	jobject playerEntitiesList = env->GetObjectField(worldInstance, jni_cache::fieldCache["playerEntities"]);
-	if (CheckJNIException(env) || !playerEntitiesList) {
-		env->DeleteLocalRef(worldInstance);
-		return;
-	}
+    jobject playerEntitiesList = env->GetObjectField(worldInstance, playerEntitiesField);
+    if (CheckJNIException(env) || !playerEntitiesList) {
+        env->DeleteLocalRef(worldInstance);
+        return;
+    }
 
-	jmethodID getMethod = env->GetMethodID(jni_cache::jclassCache["java/util/List"], "get", "(I)Ljava/lang/Object;");
-	if (CheckJNIException(env) || !getMethod) {
-		env->DeleteLocalRef(playerEntitiesList);
-		env->DeleteLocalRef(worldInstance);
-		return;
-	}
+    for (int i = 0; i < currSize; i++) {
+        jobject player = env->CallObjectMethod(playerEntitiesList, getMethod, i);
+        if (CheckJNIException(env) || !player) continue;
+        playerEntities.push_back(player);
+    }
 
-	for (int i = 0; i < currSize; i++) {
-		jobject player = env->CallObjectMethod(playerEntitiesList, getMethod, i);
-		if (CheckJNIException(env) || !player) continue;
-
-		playerEntities.push_back(player);
-
-	}
-
-	env->DeleteLocalRef(worldInstance);
-	env->DeleteLocalRef(playerEntitiesList);
-
+    env->DeleteLocalRef(worldInstance);
+    env->DeleteLocalRef(playerEntitiesList);
 }
 
 std::vector<Vec3<double>> world::entity::player::playersPos(JNIEnv* env, std::vector<jobject> playerEntities) {
+    static jfieldID posXField = jni_cache::fieldCache["posX"];
+    static jfieldID posYField = jni_cache::fieldCache["posY"];
+    static jfieldID posZField = jni_cache::fieldCache["posZ"];
 
-	std::vector<Vec3<double>> positions{};
+    std::vector<Vec3<double>> positions{};
+    if (playerEntities.empty()) return positions;
 
-	if (playerEntities.empty()) return positions;
+    positions.reserve(playerEntities.size());
+    for (auto& entity : playerEntities) {
 
-	positions.reserve(playerEntities.size());
-	for (auto& entities : playerEntities) {
-		jdouble posX = env->GetDoubleField(entities, jni_cache::fieldCache["posX"]);
-		if (CheckJNIException(env)) continue;
-		jdouble posY = env->GetDoubleField(entities, jni_cache::fieldCache["posY"]);
-		if (CheckJNIException(env)) continue;
-		jdouble posZ = env->GetDoubleField(entities, jni_cache::fieldCache["posZ"]);
-		if (CheckJNIException(env)) continue;
+        if (entity == nullptr) {
+            continue; 
+        }
 
-		positions.emplace_back(Vec3{ static_cast<double>(posX), static_cast<double>(posY), static_cast<double>(posZ) });
-	}
+        jdouble posX = env->GetDoubleField(entity, posXField);
+        if (CheckJNIException(env)) continue;
 
-	return positions;
+        jdouble posY = env->GetDoubleField(entity, posYField);
+        if (CheckJNIException(env)) continue;
+
+        jdouble posZ = env->GetDoubleField(entity, posZField);
+        if (CheckJNIException(env)) continue;
+
+        positions.emplace_back(Vec3{ posX, posY, posZ });
+    }
+
+    return positions;
+}
+
+std::vector<int> world::entity::player::hurtResistantTime(JNIEnv* env, std::vector<jobject> playerEntities) {
+    static jfieldID hurtResistantTimeField = jni_cache::fieldCache["hurtResistantTime"];
+
+    std::vector<int> hurtResistantTime{};
+    if (playerEntities.empty()) return hurtResistantTime;
+
+    hurtResistantTime.reserve(playerEntities.size());
+    for (auto& entity : playerEntities) {
+        
+        if (entity == nullptr) {
+            continue;
+        }
+
+        jint value = env->GetIntField(entity, hurtResistantTimeField);
+        if (CheckJNIException(env)) {
+            continue;
+        }
+
+
+        hurtResistantTime.emplace_back(value);
+    }
+
+    return hurtResistantTime;
 }
 
 bool world::worldExist(JNIEnv* env) {
-	jobject worldInstance = env->GetObjectField(jni_cache::jobjectCache["theMinecraft"], jni_cache::fieldCache["theWorld"]);
-	if (CheckJNIException(env) || !worldInstance) {
-		env->DeleteLocalRef(worldInstance);
-		return false;
-	}
+    static jfieldID theWorldField = jni_cache::fieldCache["theWorld"];
+    static jobject theMinecraft = jni_cache::jobjectCache["theMinecraft"];
 
-	env->DeleteLocalRef(worldInstance);
+    jobject worldInstance = env->GetObjectField(theMinecraft, theWorldField);
+    if (CheckJNIException(env) || !worldInstance) {
+        env->DeleteLocalRef(worldInstance);
+        return false;
+    }
 
-	return true;
+    env->DeleteLocalRef(worldInstance);
+    return true;
 }

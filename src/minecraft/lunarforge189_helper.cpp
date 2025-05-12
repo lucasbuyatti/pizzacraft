@@ -14,17 +14,22 @@ void getLoadedClasses(JNIEnv* env, jvmtiEnv* jvmti, std::unordered_map<std::stri
 	jvmtiError getLoadedClasses = jvmti->GetLoadedClasses(&amount, &classes);
 	if (CheckJNIException(env) || getLoadedClasses != 0) return;
 
-	const char* onlymc = "net.minecraft";
+	//const char* onlymc = "net.minecraft";
 
 	for (int i = 0; i < amount; i++) {
 		jstring className = (jstring)env->CallObjectMethod(classes[i], getName);
 
 		const char* classNameStr = env->GetStringUTFChars(className, nullptr);
 
-		if (strncmp(classNameStr, onlymc, strlen(onlymc)) == 0) {
-			map.emplace(classNameStr, (jclass)env->NewGlobalRef(classes[i]));
+		/*if (strncmp(classNameStr, onlymc, strlen(onlymc)) == 0) {
+			printf("LOADED CLASSES : %s | %p\n", classNameStr, classes[i]);
 			
 		}
+		else {
+			printf("NOT LOADED CLASSES : %s | %p\n", classNameStr, classes[i]);
+		}*/
+
+		map.emplace(classNameStr, (jclass)env->NewGlobalRef(classes[i]));
 
 		env->ReleaseStringUTFChars(className, classNameStr);
 		env->DeleteLocalRef(className);
@@ -142,6 +147,15 @@ namespace jni_cache {
 			cacheClass("net.minecraft.util.MovementInput", env, map);
 			cacheClass("net.minecraft.client.settings.KeyBinding", env, map);
 			cacheClass("java/util/List", env, map);
+			cacheClass("net.minecraft.client.network.NetHandlerPlayClient", env, map);
+			cacheClass("net.minecraft.network.Packet", env, map);
+			cacheClass("net.minecraft.util.Session", env, map);
+			cacheClass("net.minecraft.util.MouseHelper", env, map);
+
+			cacheClass("io.netty.channel.Channel", env, map);
+			cacheClass("io.netty.channel.ChannelHandler", env, map);
+			cacheClass("io.netty.channel.ChannelInboundHandlerAdapter", env, map); // io.netty.channel.SimpleChannelInboundHandler
+			cacheClass("io.netty.channel.ChannelPipeline", env, map);
 
 			cacheStaticField("net.minecraft.client.Minecraft", "theMinecraft", "Lnet/minecraft/client/Minecraft;", env);
 			cacheStaticField("net.minecraft.client.Minecraft", "debugFPS", "I", env);
@@ -157,6 +171,9 @@ namespace jni_cache {
 			cacheField("net.minecraft.client.Minecraft", "serverName", "Ljava/lang/String;", env);
 			cacheField("net.minecraft.client.Minecraft", "serverPort", "I", env);
 			cacheField("net.minecraft.client.Minecraft", "inGameHasFocus", "Z", env);
+			cacheField("net.minecraft.client.Minecraft", "objectMouseOver", "Lnet/minecraft/util/MovingObjectPosition;", env);
+			cacheField("net.minecraft.client.Minecraft", "leftClickCounter", "I", env);
+			cacheField("net.minecraft.client.Minecraft", "playerController", "Lnet/minecraft/client/multiplayer/PlayerControllerMP;", env);
 
 			cacheField("net.minecraft.entity.Entity", "posX", "D", env);
 			cacheField("net.minecraft.entity.Entity", "posY", "D", env);
@@ -167,9 +184,11 @@ namespace jni_cache {
 			cacheField("net.minecraft.entity.Entity", "rotationYaw", "F", env);
 			cacheField("net.minecraft.entity.Entity", "rotationPitch", "F", env);
 			cacheField("net.minecraft.entity.Entity", "isDead", "Z", env);
-			cacheField("net.minecraft.entity.Entity", "onGround", "Z", env); // dont work in lunar client
+			cacheField("net.minecraft.entity.Entity", "onGround", "Z", env); // dont work in lunar client, or just lunar gives an advantage to other clients?? (ALWAYS TRUE)
 			cacheField("net.minecraft.entity.Entity", "fallDistance", "F", env);
 			cacheField("net.minecraft.entity.Entity", "dimension", "I", env);
+			cacheField("net.minecraft.entity.Entity", "hurtResistantTime", "I", env);
+			cacheField("net.minecraft.entity.Entity", "ticksExisted", "I", env);
 
 			cacheField("net.minecraft.client.entity.EntityPlayerSP", "movementInput", "Lnet/minecraft/util/MovementInput;", env);
 			cacheField("net.minecraft.entity.EntityLivingBase", "hurtTime", "I", env);
@@ -200,6 +219,7 @@ namespace jni_cache {
 			cacheField("net.minecraft.client.settings.GameSettings", "keyBindStreamPauseUnpause", "Lnet/minecraft/client/settings/KeyBinding;", env);
 			cacheField("net.minecraft.client.settings.GameSettings", "keyBindStreamCommercials", "Lnet/minecraft/client/settings/KeyBinding;", env);
 			cacheField("net.minecraft.client.settings.GameSettings", "keyBindStreamToggleMic", "Lnet/minecraft/client/settings/KeyBinding;", env);
+			cacheField("net.minecraft.util.MovingObjectPosition", "typeOfHit", "Lnet/minecraft/util/MovingObjectPosition$MovingObjectType;", env);
 
 			cacheMethod("net.minecraft.entity.Entity", "setAngles", "(FF)V", env); // dont work in lunar client
 			cacheMethod("net.minecraft.entity.player.EntityPlayer", "getHeldItem", "()Lnet/minecraft/item/ItemStack;", env);
@@ -207,10 +227,16 @@ namespace jni_cache {
 			cacheMethod("net.minecraft.item.Item", "getRegistryName", "()Ljava/lang/String;", env);
 			cacheMethod("net.minecraft.entity.Entity", "isSprinting", "()Z", env);
 			cacheMethod("net.minecraft.entity.player.EntityPlayer", "jump", "()V", env);
+			cacheMethod("net.minecraft.client.multiplayer.PlayerControllerMP", "attackEntity", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/entity/Entity;)V", env);
+			cacheMethod("net.minecraft.client.Minecraft", "getNetHandler", "()Lnet/minecraft/client/network/NetHandlerPlayClient;", env);
+			cacheMethod("net.minecraft.client.network.NetHandlerPlayClient", "addToSendQueue", "(Lnet/minecraft/network/Packet;)V", env);
 
 			cacheMethod("net.minecraft.client.settings.KeyBinding", "isKeyDown", "()Z", env);
 			cacheMethod("net.minecraft.client.settings.KeyBinding", "isPressed", "()Z", env);
 			cacheMethod("net.minecraft.client.settings.KeyBinding", "getKeyCode", "()I", env);
+
+			cacheMethod("io.netty.channel.Channel", "pipeline", "()Lio/netty/channel/ChannelPipeline;", env);
+			cacheMethod("io.netty.channel.ChannelPipeline", "addLast", "(Ljava/lang/String;Lio/netty/channel/ChannelHandler;)V", env);
 
 
 			cacheStaticObject("net.minecraft.client.Minecraft", "theMinecraft", env);
@@ -230,15 +256,16 @@ namespace jni_cache {
 				env->DeleteGlobalRef(value);
 			}
 		}
+		
+		jclassCache.clear();
 
 		for (auto& [key, value] : jobjectCache) {
 			printf("JOBJECT: %s | %p DELETED\n", key.c_str(), value);
 			env->DeleteGlobalRef(value);
 		}
-
-		jclassCache.clear();
+		jobjectCache.clear();
 		fieldCache.clear();
 		methodCache.clear();
-		jobjectCache.clear();
+
 	}
 }

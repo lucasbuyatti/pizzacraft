@@ -22,6 +22,14 @@ void modules::config::set_config() {
     json j;
     in >> j;
 
+    if (j.contains("reach")) {
+        auto& reach_config_json = j["reach"];
+        cfg.reach_cfg.enable.store(reach_config_json.value("enable", false));
+        cfg.reach_cfg.min_distance.store(reach_config_json.value("min_distance", 3.0));
+        cfg.reach_cfg.max_distance.store(reach_config_json.value("max_distance", 3.2));
+        cfg.reach_cfg.skip_chance.store(reach_config_json.value("skip_chance", 0.10));
+    }
+
     if (j.contains("aimbot")) {
         auto& aim_config_json = j["aimbot"];
         cfg.aim_cfg.enable.store(aim_config_json.value("enable", false));
@@ -30,6 +38,7 @@ void modules::config::set_config() {
         cfg.aim_cfg.speed.store(aim_config_json.value("speed", 1.0f));
         cfg.aim_cfg.smooth.store(aim_config_json.value("smooth", 1.0f));
         cfg.aim_cfg.distance.store(aim_config_json.value("distance", 1.0f));
+        cfg.aim_cfg.ignore_targeted.store(aim_config_json.value("ignore_targeted", false));
     }
 
     if (j.contains("autoclick")) {
@@ -37,6 +46,7 @@ void modules::config::set_config() {
         cfg.click_cfg.enable.store(click_config_json.value("enable", false));
         cfg.click_cfg.key.store(click_config_json.value("key", 1));
         cfg.click_cfg.cps.store(click_config_json.value("cps", 10));
+        cfg.click_cfg.ignore_blocks.store(click_config_json.value("ignore_blocks", false));
     }
 
     if (j.contains("fastplace")) {
@@ -51,21 +61,33 @@ void modules::config::set_config() {
         cfg.vel_cfg.enable.store(vel_config_json.value("enable", false));
         cfg.vel_cfg.chance.store(vel_config_json.value("chance", 1));
     }
+
+    if (j.contains("noclickdelay")) {
+        auto& ncd_config_json = j["noclickdelay"];
+        cfg.ncd_cfg.enable.store(ncd_config_json.value("enable", false));
+    }
+
 }
 
 void modules::config::create_config() {
     std::ofstream out("config.json");
     
+    cfg.reach_cfg.enable.store(false);
+    cfg.reach_cfg.min_distance.store(3.0);
+    cfg.reach_cfg.max_distance.store(3.2);
+
     cfg.aim_cfg.enable.store(false);
     cfg.aim_cfg.key.store(1);
     cfg.aim_cfg.fov.store(1.f);
     cfg.aim_cfg.speed.store(1.f);
     cfg.aim_cfg.smooth.store(1.f);
     cfg.aim_cfg.distance.store(1.f);
+    cfg.aim_cfg.ignore_targeted.store(false);
 
     cfg.click_cfg.enable.store(false);
     cfg.click_cfg.key.store(1);
     cfg.click_cfg.cps.store(10);
+    cfg.click_cfg.ignore_blocks.store(false);
 
     cfg.fplace_cfg.enable.store(false);
     cfg.fplace_cfg.delay.store(1);
@@ -73,6 +95,8 @@ void modules::config::create_config() {
 
     cfg.vel_cfg.enable.store(false);
     cfg.vel_cfg.chance.store(1);
+
+    cfg.ncd_cfg.enable.store(false);
 
     json j = cfg;
 

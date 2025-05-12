@@ -1,3 +1,4 @@
+#pragma warning(disable: 4244) // conversion from 'double' to 'float', possible loss of data
 #include "../modules.h"
 
 void modules::aimbot::aim() {
@@ -79,7 +80,7 @@ void modules::aimbot::aim() {
 				float maxDistSq = maxDist * maxDist;
 
 				if (distSq > maxDistSq) {
-					break;
+					continue;
 				}
 
 				double targetYaw = atan2(direction.z, direction.x) * (180.0f / M_PI) - 90;
@@ -94,11 +95,16 @@ void modules::aimbot::aim() {
 				while (deltaYaw < -180) deltaYaw += 360;
 
 				float fov = modules::config::cfg.aim_cfg.fov.load();
-				double fovToTarget = sqrt(deltaYaw * deltaYaw + deltaPitch * deltaPitch);
+				float fovToTarget = sqrt(deltaYaw * deltaYaw + deltaPitch * deltaPitch);
 
-				if (GetAsyncKeyState(modules::config::cfg.aim_cfg.key.load()) & 0x8000 || minecraft::game_settings::keyBindAttack_isKeyDown(env) && fovToTarget <= fov) {
+				if (modules::config::cfg.aim_cfg.ignore_targeted.load()) {
+					if (minecraft::typeOfHit(env) == "ENTITY") continue;
+				}
 
-					const float yawEpsilon = 0.5f;
+				if (GetAsyncKeyState(modules::config::cfg.aim_cfg.key.load()) & 0x8000 &&
+					fovToTarget < fov) {
+
+					const float yawEpsilon = 1.5;
 					if (std::abs(deltaYaw) <= yawEpsilon)
 						break;
 
@@ -123,9 +129,14 @@ void modules::aimbot::aim() {
 			for (jobject o : playerEntities) env->DeleteLocalRef(o);
 		}
 
+		if (modules::config::cfg.des_cfg.destruct.load()) {
+			break;
+		}
+
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(25));
 	}
+
 }
 
 void modules::aimbot::aimUI() {
@@ -135,6 +146,7 @@ void modules::aimbot::aimUI() {
 	float smooth = modules::config::cfg.aim_cfg.smooth.load();
 	float speed = modules::config::cfg.aim_cfg.speed.load();
 	float distance = modules::config::cfg.aim_cfg.distance.load();
+	bool ignore_targeted = modules::config::cfg.aim_cfg.ignore_targeted.load();
 
 	const char* items[] = { "LEFT CLICK", "RIGHT CLICK", "X CLICK 1", "X CLICK 2", "MIDDLE CLICK"};
 	static int actual = key;
@@ -185,6 +197,9 @@ void modules::aimbot::aimUI() {
 
 	ImGui::SliderFloat("Distance", &distance, 3.f, 10.f);
 	modules::config::cfg.aim_cfg.distance.store(distance);
+
+	ImGui::Checkbox("Ignore Targeted", &ignore_targeted);
+	modules::config::cfg.aim_cfg.ignore_targeted.store(ignore_targeted);
 
 	ImGui::Unindent();
 }

@@ -26,5 +26,11 @@ namespace player {
 	void setJumping(JNIEnv* env);
 
 	void jump(JNIEnv* env);
+
+	void attackEntity(jobject me, jobject target, JNIEnv* env);
+
+	jobject thePlayer(JNIEnv* env);
+
+	int ticksExisted(JNIEnv* env);
 }
 

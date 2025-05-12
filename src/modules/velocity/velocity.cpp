@@ -60,7 +60,7 @@ void modules::velocity::vel() {
 			int chance = modules::config::cfg.vel_cfg.chance.load();
 
 			if (!jumpDone && currentHurt >= 8 && fallDistance < 0.005f &&  dist(gen) <= chance) {
-				printf("Jump reset!\n");
+
 				INPUT input = { 0 };
 				input.type = INPUT_KEYBOARD;
 				input.ki.wVk = VK_SPACE;      
@@ -82,6 +82,10 @@ void modules::velocity::vel() {
 			}
 
 
+		}
+
+		if (modules::config::cfg.des_cfg.destruct.load()) {
+			break;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(25));

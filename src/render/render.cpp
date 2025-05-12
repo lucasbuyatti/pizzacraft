@@ -69,7 +69,11 @@ int RunImGuiApp()
             if (msg.message == WM_QUIT)
                 done = true;
         }
+
+        if (modules::config::cfg.des_cfg.destruct.load()) break;
+
         if (done) break;
+
         if (::IsIconic(hwnd)) {
             ::Sleep(10);
             continue;
@@ -81,15 +85,23 @@ int RunImGuiApp()
 
         ImGui::Begin("(^_^)");
         {
-            modules::aimbot::aimUI();
+            modules::reach::reachUI();
             ImGui::Separator();
-            modules::velocity::velUI();
+            modules::aimbot::aimUI();
             ImGui::Separator();
             modules::autoclick::clickUI();
             ImGui::Separator();
+            modules::velocity::velUI();
+            ImGui::Separator();
             modules::fastplace::fplaceUI();
             ImGui::Separator();
-            modules::config::configUI();
+            modules::noclickdelay::ncdUI();
+            ImGui::Separator();
+            if (ImGui::CollapsingHeader("Other")) {
+                modules::config::configUI();
+                ImGui::SameLine();
+                modules::destruct::destructUI();
+            }
         }
         ImGui::End();
 

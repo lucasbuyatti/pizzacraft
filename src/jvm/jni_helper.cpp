@@ -17,7 +17,7 @@ jint GetJVMInstance(JNIEnv*& env) {
     if (!env) {
         return JNI_ERR;
     }
-
+   
     return JNI_OK;
 }
 
@@ -31,6 +31,10 @@ jint GetJVMTIInstance(jvmtiEnv*& jvmti) {
     }
 
     return jvm->GetEnv((void**)&jvmti, JVMTI_VERSION_1_2);
+}
+
+jint detachCurrThread(JNIEnv* env) {
+    return jvm->DetachCurrentThread();
 }
 
 jboolean methodIsNative(jmethodID method, jvmtiEnv* jvmti) {

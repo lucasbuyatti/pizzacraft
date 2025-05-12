@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\hooks\winsock_hook.cpp" />
     <ClCompile Include="src\imgui\include\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\imgui\include\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="src\imgui\include\imgui.cpp" />
@@ -157,12 +158,16 @@
     <ClCompile Include="src\minhook\includes\trampoline.c" />
     <ClCompile Include="src\modules\aimbot\aimbot.cpp" />
     <ClCompile Include="src\modules\autoclick\autoclick.cpp" />
+    <ClCompile Include="src\modules\destruct\destruct.cpp" />
     <ClCompile Include="src\modules\fastplace\fastplace.cpp" />
     <ClCompile Include="src\modules\misplace\misplace.cpp" />
+    <ClCompile Include="src\modules\noclickdelay\noclickdelay.cpp" />
+    <ClCompile Include="src\modules\reach\reach.cpp" />
     <ClCompile Include="src\modules\velocity\velocity.cpp" />
     <ClCompile Include="src\render\render.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\hooks\winsock_hook.h" />
     <ClInclude Include="src\imgui\include\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imgui\include\backends\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\imgui\include\backends\imgui_impl_win32.h" />

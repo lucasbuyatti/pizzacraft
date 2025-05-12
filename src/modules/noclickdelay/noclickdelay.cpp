@@ -1,6 +1,7 @@
 #include "../modules.h"
 
-void modules::fastplace::fplace() {
+
+void modules::noclickdelay::ncd() {
 	JNIEnv* env = nullptr;
 
 	jvmtiEnv* jvmti = nullptr;
@@ -48,14 +49,7 @@ void modules::fastplace::fplace() {
 				continue;
 			}
 
-			if (modules::config::cfg.fplace_cfg.blocks_projectiles.load() && !blocks::isUsingBlocks(env)) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(25));
-				continue;
-			}
-
-			if (GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
-				minecraft::rightClickDelayTimer(env, 0);
-			}
+			
 
 		}
 
@@ -63,28 +57,14 @@ void modules::fastplace::fplace() {
 			break;
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(20 * modules::config::cfg.fplace_cfg.delay.load()));
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 }
 
-void modules::fastplace::fplaceUI() {
+void modules::noclickdelay::ncdUI() {
+	bool enable = modules::config::cfg.ncd_cfg.enable.load();
 
-	bool enable = modules::config::cfg.fplace_cfg.enable.load();
-	int delay = modules::config::cfg.fplace_cfg.delay.load();
-	bool only_blocks_and_projectiles = modules::config::cfg.fplace_cfg.blocks_projectiles.load();
-
-	ImGui::Checkbox("Fastplace", &enable);
-	modules::config::cfg.fplace_cfg.enable.store(enable);
-
-	ImGui::Indent();
-
-	ImGui::Checkbox("Only Blocks & Projectiles", &only_blocks_and_projectiles);
-	modules::config::cfg.fplace_cfg.blocks_projectiles.store(only_blocks_and_projectiles);
-
-	ImGui::SliderInt("Delay", &delay, 1, 5);
-	modules::config::cfg.fplace_cfg.delay.store(delay);
-
-	ImGui::Unindent();
-
+	ImGui::Checkbox("NoClickDelay", &enable);
+	modules::config::cfg.ncd_cfg.enable.store(enable);
 
 }

@@ -5,6 +5,8 @@ jint GetJVMInstance(JNIEnv*& env);
 
 jint GetJVMTIInstance(jvmtiEnv*& jvmti);
 
+jint detachCurrThread(JNIEnv* env);
+
 jboolean methodIsNative(jmethodID method, jvmtiEnv* jvmti);
 
 void getByteCode(jmethodID method, jvmtiEnv* jvmti);
